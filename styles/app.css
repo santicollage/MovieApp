@@ -160,7 +160,7 @@ button {
   display: inline-block;
 }
 .header-arrow--white {
-  color: var(--two);
+  color: var(--six);
 }
 
 .header-searchForm {

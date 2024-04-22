@@ -15,6 +15,9 @@ container.innerHTML = '';
 movies.forEach(movie => {
   const movieContainer = document.createElement('div')
   movieContainer.classList.add('movie-container');
+  movieContainer.addEventListener('click', () => {
+    location.hash = `#movie=${movie.id}`;
+  });
 
   const movieImg = document.createElement('img');
   movieImg.classList.add('movie-img');
@@ -71,4 +74,43 @@ async function getMoviesByCategory(id) {
   const movies = data.results;
 
   createMovies(movies, genericSection);
+}
+
+async function getMoviesBySearch(query) {
+  const {data} = await api('search/movie', {
+    params: {
+      query,
+    }
+  });
+  const movies = data.results;
+
+  createMovies(movies, genericSection);
+}
+
+async function getTrendingMovies() {
+  const {data} = await api('trending/movie/day');
+  const movies = data.results;
+
+  createMovies(movies, genericSection);
+}
+
+async function getMovieById(id) {
+  const {data: movie} = await api(`movie/${id}`);
+
+  const movieImgUrl = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
+  headerSection.style.background = `url(${movieImgUrl})`;
+
+  movieDetailTitle.textContent = movie.title;
+  movieDetailDescription.textContent = movie.overview;
+  movieDetailScore.textContent = movie.vote_average;
+
+  createCategories(movie.genres, movieDetailCategoriesList);
+  getRelatedMoviesId(id);
+}
+
+async function getRelatedMoviesId(id) {
+  const {data} = await api(`movie/${id}/recommendations`);
+  const relatedMovies = data.results;
+
+  createMovies(relatedMovies, relatedMoviesContainer)
 }
